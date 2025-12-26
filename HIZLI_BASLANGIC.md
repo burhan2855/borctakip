@@ -23,13 +23,29 @@
 ## 🎯 3 Dakikada Başla / Start in 3 Minutes
 
 ### 1️⃣ Veritabanını Hazırla / Setup Database
+
+**Linux/Mac:**
 ```bash
 python3 init_api_keys_db.py
 ```
 
+**Windows:**
+```cmd
+python init_api_keys_db.py
+```
+
+> 🪟 **Windows kullanıcıları:** Detaylı rehber için [WINDOWS_KURULUM.md](WINDOWS_KURULUM.md) dosyasına bakın!
+
 ### 2️⃣ İlk Örneği Çalıştır / Run First Example
+
+**Linux/Mac:**
 ```bash
 python3 basit_ornek.py
+```
+
+**Windows:**
+```cmd
+python basit_ornek.py
 ```
 
 Bu size gösterecek / This will show you:
