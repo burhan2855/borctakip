@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+test_debt_database.db
+debt_database.backup
+test_api_keys*.db
