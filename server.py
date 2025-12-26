@@ -9,6 +9,19 @@ from api_auth_middleware import authenticate_api_request
 from api_key_manager import create_api_key, list_user_api_keys
 import sqlite3
 from datetime import datetime
+import os
+import logging
+
+# Configuration
+DB_PATH = os.environ.get('DB_PATH', 'debt_database')
+DEBUG_MODE = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
@@ -45,7 +58,7 @@ def get_transactions(auth_context):
     user_id = auth_context['user_id']
     
     try:
-        conn = sqlite3.connect('debt_database')
+        conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -65,7 +78,8 @@ def get_transactions(auth_context):
         })
     
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Database error: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @app.route('/api/transactions/<int:transaction_id>', methods=['GET'])
@@ -78,7 +92,7 @@ def get_transaction(auth_context, transaction_id):
     user_id = auth_context['user_id']
     
     try:
-        conn = sqlite3.connect('debt_database')
+        conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -97,7 +111,8 @@ def get_transaction(auth_context, transaction_id):
             return jsonify({"error": "Transaction not found"}), 404
     
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Database error: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @app.route('/api/transactions', methods=['POST'])
@@ -125,7 +140,7 @@ def create_transaction(auth_context):
             return jsonify({"error": f"Missing field: {field}"}), 400
     
     try:
-        conn = sqlite3.connect('debt_database')
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         cursor.execute('''
@@ -144,7 +159,8 @@ def create_transaction(auth_context):
         }), 201
     
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Database error: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @app.route('/api/transactions/<int:transaction_id>', methods=['PUT'])
@@ -158,7 +174,7 @@ def update_transaction(auth_context, transaction_id):
     data = request.get_json()
     
     try:
-        conn = sqlite3.connect('debt_database')
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         # Önce işlemin kullanıcıya ait olduğunu kontrol et
@@ -169,11 +185,12 @@ def update_transaction(auth_context, transaction_id):
             conn.close()
             return jsonify({"error": "Transaction not found"}), 404
         
-        # Güncelleme sorgusu oluştur
+        # Güncelleme sorgusu oluştur - whitelist ile güvenli
+        ALLOWED_FIELDS = ['title', 'amount', 'isDebt', 'status', 'category', 'date']
         update_fields = []
         update_values = []
         
-        for field in ['title', 'amount', 'isDebt', 'status', 'category', 'date']:
+        for field in ALLOWED_FIELDS:
             if field in data:
                 update_fields.append(f"{field} = ?")
                 update_values.append(data[field])
@@ -197,7 +214,8 @@ def update_transaction(auth_context, transaction_id):
         return jsonify({"message": "Transaction updated successfully"})
     
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Error updating transaction {transaction_id}: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @app.route('/api/transactions/<int:transaction_id>', methods=['DELETE'])
@@ -210,7 +228,7 @@ def delete_transaction(auth_context, transaction_id):
     user_id = auth_context['user_id']
     
     try:
-        conn = sqlite3.connect('debt_database')
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         cursor.execute('DELETE FROM transactions WHERE id = ? AND userId = ?', 
@@ -226,7 +244,8 @@ def delete_transaction(auth_context, transaction_id):
         return jsonify({"message": "Transaction deleted successfully"})
     
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Database error: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 # ============================================================================
@@ -364,11 +383,13 @@ if __name__ == '__main__':
     print("   GET  /api/user/keys - API anahtarları")
     print("\n🔑 Örnek API anahtarı oluşturmak için:")
     print("   python3 -c \"from api_key_manager import create_api_key; k, i = create_api_key('user123', 'Android'); print(f'API Key: {k}')\"")
+    print("\n⚠️  Debug Mode: {}".format("Enabled" if DEBUG_MODE else "Disabled"))
+    print("   Production'da debug=False kullanın!")
     print("\n" + "="*60 + "\n")
     
     # Server'ı başlat
     app.run(
         host='0.0.0.0',  # Tüm network interface'lerinden erişilebilir
         port=5000,
-        debug=True       # Geliştirme modu (production'da False yapın)
+        debug=DEBUG_MODE  # Environment variable ile kontrol edilir
     )
