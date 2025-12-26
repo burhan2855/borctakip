@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Flask API Server for Android Application
-Bu server Android uygulamanızın backend'i olarak çalışır.
+Bu server Android uygulamanızın backend'ı olarak çalışır.
 """
 
 from flask import Flask, request, jsonify
@@ -15,6 +15,9 @@ import logging
 # Configuration
 DB_PATH = os.environ.get('DB_PATH', 'debt_database')
 DEBUG_MODE = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+
+# Allowed fields for transaction updates (whitelist for security)
+ALLOWED_TRANSACTION_FIELDS = ['title', 'amount', 'isDebt', 'status', 'category', 'date']
 
 # Setup logging
 logging.basicConfig(
@@ -186,11 +189,10 @@ def update_transaction(auth_context, transaction_id):
             return jsonify({"error": "Transaction not found"}), 404
         
         # Güncelleme sorgusu oluştur - whitelist ile güvenli
-        ALLOWED_FIELDS = ['title', 'amount', 'isDebt', 'status', 'category', 'date']
         update_fields = []
         update_values = []
         
-        for field in ALLOWED_FIELDS:
+        for field in ALLOWED_TRANSACTION_FIELDS:
             if field in data:
                 update_fields.append(f"{field} = ?")
                 update_values.append(data[field])

@@ -229,7 +229,7 @@ print(f"Test Anahtarı: {api_key}")
 print(f"Son Kullanma: {key_info['expires_at']}")
 ```
 
-Test anahtarları `sk_test_` ile başlar, canlı anahtarlar `sk_live_` ile başlar.
+Test anahtarları `sk_test_` ile başlarken, canlı anahtarlar `sk_live_` ile başlar.
 
 ## 📱 Örnek: Komple Mobil Uygulama Senaryosu
 
