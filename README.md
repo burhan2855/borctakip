@@ -15,16 +15,23 @@ Bu uygulama artık kullanıcıların kendi API anahtarlarını oluşturup yönet
 
 This application now includes a comprehensive API key management system that allows users to create and manage their own API keys.
 
-### Hızlı Başlangıç / Quick Start
+### 🚀 Hızlı Başlangıç / Quick Start
+
+**Türkçe Rehber:** Adım adım kullanım için → [NASIL_KULLANILIR.md](NASIL_KULLANILIR.md) 📖
+
+**English Guide:** For detailed usage → [API_KEY_MANAGEMENT.md](API_KEY_MANAGEMENT.md) 📖
 
 ```bash
-# Veritabanını başlat / Initialize database
+# 1. Veritabanını başlat / Initialize database
 python3 init_api_keys_db.py
 
-# Örnek kullanımı gör / See example usage
+# 2. Basit örneği çalıştır / Run simple example
+python3 basit_ornek.py
+
+# 3. Tam örneği gör / See complete example
 python3 api_key_example.py
 
-# Testleri çalıştır / Run tests
+# 4. Testleri çalıştır / Run tests
 python3 test_api_keys.py
 ```
 
@@ -37,9 +44,15 @@ python3 test_api_keys.py
 - ✅ Son kullanım takibi / Last usage tracking
 - ✅ Opsiyonel süre sonu / Optional expiration
 
-### Dokümantasyon / Documentation
+### 📚 Dokümantasyon / Documentation
 
-Detaylı kullanım için bkz. / For detailed usage, see: [API_KEY_MANAGEMENT.md](API_KEY_MANAGEMENT.md)
+**Türkçe:**
+- [NASIL_KULLANILIR.md](NASIL_KULLANILIR.md) - Adım adım kullanım rehberi
+- [basit_ornek.py](basit_ornek.py) - Basit örnek kod
+
+**English:**
+- [API_KEY_MANAGEMENT.md](API_KEY_MANAGEMENT.md) - Complete API documentation
+- [api_key_example.py](api_key_example.py) - Full example code
 
 ### Güvenlik / Security
 
